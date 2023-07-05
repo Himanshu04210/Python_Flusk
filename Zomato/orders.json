@@ -1,0 +1,65 @@
+[
+    {
+        "id": 1,
+        "customer_name": "John Doe",
+        "status": "pending",
+        "items": [
+            {
+                "dish_id": 1,
+                "dish_name": "Spaghetti Bolognese"
+            },
+            {
+                "dish_id": 3,
+                "dish_name": "Caesar Salad"
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "customer_name": "Jane Smith",
+        "status": "pending",
+        "items": [
+            {
+                "dish_id": 2,
+                "dish_name": "Margherita Pizza"
+            },
+            {
+                "dish_id": 4,
+                "dish_name": "Chocolate Brownie"
+            }
+        ]
+    },
+    {
+        "id": 3,
+        "customer_name": "Kirti",
+        "status": "received",
+        "items": [
+            {
+                "dish_id": 1,
+                "dish_name": "Pizza"
+            }
+        ]
+    },
+    {
+        "customer_name": "kittu",
+        "items": [
+            {
+                "dish_id": 2,
+                "quantity": 1
+            }
+        ],
+        "id": 5,
+        "total_price": 5.99
+    },
+    {
+        "customer_name": "kittu",
+        "items": [
+            {
+                "dish_id": 2,
+                "quantity": 2
+            }
+        ],
+        "id": 6,
+        "total_price": 11.98
+    }
+]
