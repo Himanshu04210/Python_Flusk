@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Zesty Zomato - Admin Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <span>Zesty Zomato</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#">Home</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Menu</a></li>
+                <li><a href="#">Specials</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+            <div class="user-profile">
+                <img src="https://img.freepik.com/free-photo/young-beautiful-woman-pink-warm-sweater-natural-look-smiling-portrait-isolated-long-hair_285396-896.jpg?size=626&ext=jpg&ga=GA1.2.56845475.1668768780&semt=sph"
+                    alt="User Profile">
+                <span>John Doe</span>
+            </div>
+        </nav>
+    </header>
+
+    <div class="big_container">
+        <div class="container">
+            <h1>Add a New Dish</h1>
+            <form id="addDishForm">
+                <label for="dishName">Dish Name:</label>
+                <input type="text" id="dishName" name="dishName" required>
+
+                <label for="dishPrice">Dish Price:</label>
+                <input type="number" id="dishPrice" name="dishPrice" required>
+
+                <label for="dishAvailability">Dish Availability:</label>
+                <select id="dishAvailability" name="dishAvailability" required>
+                    <option value="available">Available</option>
+                    <option value="unavailable">Unavailable</option>
+                </select>
+
+                <button type="submit" id="add-dish-button">Add Dish</button>
+            </form>
+
+            <h1>Update an Existing Dish</h1>
+            <form id="updateDishForm">
+                <label for="dishId">Dish ID:</label>
+                <input type="number" id="dishId" name="dishId" required>
+
+                <label for="updatedDishName">Updated Dish Name:</label>
+                <input type="text" id="updatedDishName" name="updatedDishName" required>
+
+                <label for="updatedDishPrice">Updated Dish Price:</label>
+                <input type="number" id="updatedDishPrice" name="updatedDishPrice" required>
+
+                <label for="updatedDishAvailability">Updated Dish Availability:</label>
+                <select id="updatedDishAvailability" name="updatedDishAvailability" required>
+                    <option value="available">Available</option>
+                    <option value="unavailable">Unavailable</option>
+                </select>
+
+                <button type="submit" id="update-dish-button">Update Dish</button>
+            </form>
+        </div>
+
+        <div id="dishesContainer"></div>
+    </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+
+</html>

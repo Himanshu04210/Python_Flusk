@@ -1,0 +1,150 @@
+/* styles.css */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+  }
+  
+  header {
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+  }
+  
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .logo img {
+    height: 40px;
+    margin-right: 10px;
+  }
+  
+  .logo span {
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+  
+  .nav-links {
+    list-style-type: none;
+    display: flex;
+  }
+  
+  .nav-links li {
+    margin-right: 10px;
+  }
+  
+  .nav-links a {
+    color: #fff;
+    text-decoration: none;
+    padding: 5px;
+    border-radius: 5px;
+  }
+  
+  .nav-links a:hover {
+    background-color: #fff;
+    color: #333;
+  }
+  
+  .user-profile img {
+    height: 40px;
+    margin-right: 10px;
+    border-radius: 50%;
+  }
+  
+  .user-profile span {
+    font-weight: bold;
+  }
+  
+  form {
+    margin-bottom: 20px;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  input[type="text"],
+  input[type="number"],
+  select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+  }
+  
+  button[type="submit"] {
+    background-color: #333;
+    color: #fff;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  button[type="submit"]:hover {
+    background-color: #555;
+  }
+  
+  /* Display Dishes */
+  .dish-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .dish-item {
+    background-color: #fff;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .dish-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .dish-price {
+    color: #888;
+    margin-bottom: 5px;
+  }
+  
+  .dish-availability {
+    color: green;
+    margin-bottom: 10px;
+  }
+  
+  .main_container{
+    display: flex;
+    flex-direction: row;
+  }
+
+  #dishesContainer {
+    width: 45%;
+    border: 1px solid #ccc;
+    padding: 10px;
+  }
+  
+  .dish-card {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .dish-card h3 {
+    margin-top: 0;
+  }
+  
+  .dish-card p {
+    margin-bottom: 5px;
+  }
+  

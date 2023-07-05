@@ -1,137 +1,148 @@
-import json
-from flask import Flask, jsonify, request
+from flask import Flask, request, json, jsonify
+from flask_mysqldb import MySQL
+from flask_cors import CORS
 
-DISHES_FILE = 'dishes.json'
-ORDERS_FILE = 'orders.json'
 app = Flask(__name__)
-app.secret_key = 'Kirti@1807'
+CORS(app)
+app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_PASSWORD'] = 'root'
+app.config['MYSQL_DB'] = 'db11'
 
-def load_data(file_name):
-    try:
-        with open(file_name, 'r') as file:
-            data = json.load(file)
-    except FileNotFoundError:
-        data = []
-    return data
+mysql = MySQL(app)
 
-def save_data(data, file_name):
-    with open(file_name, 'w') as file:
-        json.dump(data, file, indent=4)
+def create_tables():
+    with app.app_context():
+        cursor = mysql.connection.cursor()
 
-dishes = load_data(DISHES_FILE)
-orders = load_data(ORDERS_FILE)
-order_id_counter = max(order['id'] for order in orders if 'id' in order) if orders else 0
+        # Check if 'dishes' table exists
+        cursor.execute("SHOW TABLES LIKE 'dishes'")
+        table_exists = cursor.fetchone()
 
-def get_next_order_id():
-    global order_id_counter
-    order_id_counter += 1
-    return order_id_counter
+        if not table_exists:
+            create_dishes_table_query = """
+            CREATE TABLE dishes (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                price DECIMAL(8, 2) NOT NULL,
+                availability BOOLEAN NOT NULL DEFAULT TRUE
+            )
+            """
 
-def get_dish_by_id(dish_id):
-    return next((dish for dish in dishes if dish['id'] == dish_id), None)
+            cursor.execute(create_dishes_table_query)
+            # Add other table creation queries here...
 
-@app.route('/dishes', methods=['GET'])
-def get_dishes():
-    return jsonify(dishes)
+            mysql.connection.commit()
 
-@app.route('/dishes/<int:dish_id>', methods=['GET'])
+        cursor.close()
+
+
+@app.before_request
+def initialize():
+    create_tables()
+
+
+@app.route('/menu', methods=['GET'])
+def get_menu():
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT * FROM dishes")
+    result = cursor.fetchall()
+    cursor.close()
+    # Convert the query result to JSON using json.dumps()
+    return json.dumps(result)
+
+@app.route('/menu', methods=['POST'])
+def add_dish():
+    dish = request.get_json()
+    cursor = mysql.connection.cursor()
+    cursor.execute(
+        "INSERT INTO dishes (name, price, availability) VALUES (%s, %s, %s)",
+        (dish['name'], dish['price'], dish['availability'])
+    )
+    mysql.connection.commit()
+    cursor.close()
+    # Return a JSON response with a success message
+    return jsonify({'message': 'Dish added successfully'})
+
+@app.route('/menu/<int:dish_id>', methods=['GET'])
 def get_dish(dish_id):
-    dish = get_dish_by_id(dish_id)
-    if dish:
-        return jsonify(dish)
-    else:
-        return jsonify({'error': 'Dish not found'}), 404
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT * FROM dishes WHERE id = %s", (dish_id,))
+    result = cursor.fetchone()
+    cursor.close()
+    # Convert the query result to JSON using json.dumps()
+    return json.dumps(result)
 
-@app.route('/dishes', methods=['POST'])
-def create_dish():
-    new_dish = {
-        'id': get_next_order_id(),
-        'name': request.json['name'],
-        'price': request.json['price'],
-        'availability': bool(request.json['availability'])
-    }
-    dishes.append(new_dish)
-    save_data(dishes, DISHES_FILE)
-    return jsonify(new_dish), 201
-
-@app.route('/dishes/<int:dish_id>', methods=['PUT'])
+@app.route('/menu/<int:dish_id>', methods=['PUT'])
 def update_dish(dish_id):
-    dish = get_dish_by_id(dish_id)
-    if dish:
-        dish['name'] = request.json.get('name', dish['name'])
-        dish['price'] = request.json.get('price', dish['price'])
-        dish['availability'] = bool(request.json.get('availability', dish['availability']))
-        save_data(dishes, DISHES_FILE)
-        return jsonify(dish)
-    else:
-        return jsonify({'error': 'Dish not found'}), 404
+    dish = request.get_json()
+    cursor = mysql.connection.cursor()
+    cursor.execute(
+        "UPDATE dishes SET name = %s, price = %s, availability = %s WHERE id = %s",
+        (dish['name'], dish['price'], dish['availability'], dish_id)
+    )
+    mysql.connection.commit()
+    cursor.close()
+    # Return a JSON response with a success message
+    return jsonify({'message': 'Dish updated successfully'})
 
-@app.route('/dishes/<int:dish_id>', methods=['DELETE'])
+@app.route('/menu/<int:dish_id>', methods=['DELETE'])
 def delete_dish(dish_id):
-    dish = get_dish_by_id(dish_id)
-    if dish:
-        dishes.remove(dish)
-        save_data(dishes, DISHES_FILE)
-        return jsonify({'message': 'Dish deleted'})
-    else:
-        return jsonify({'error': 'Dish not found'}), 404
+    cursor = mysql.connection.cursor()
+    cursor.execute("DELETE FROM dishes WHERE id = %s", (dish_id,))
+    mysql.connection.commit()
+    cursor.close()
+    # Return a JSON response with a success message
+    return jsonify({'message': 'Dish deleted successfully'})
 
-@app.route('/orders', methods=['POST'])
-def create_order():
-    try:
-        # Retrieve the request data
-        data = request.get_json()
 
-        # Add an ID to the new order
-        order_id = get_next_order_id()
-        data['id'] = order_id
 
-        # Calculate total price for the order
-        total_price = 0
-        for item in data['items']:
-            dish = get_dish_by_id(item['dish_id'])
-            if dish:
-                total_price += dish['price'] * item['quantity']
-        
-        data['total_price'] = total_price
+@app.route('/place-order', methods=['POST'])
+def place_order():
+    order_data = request.get_json()
+    customer_name = order_data.get('customerName')
+    dish_ids = order_data.get('dishIds')
 
-        # Add the new order to the orders list
-        orders.append(data)
-        
-        # Save the updated orders to file
-        save_data(orders, ORDERS_FILE)
+    # Validate the order data
+    if not customer_name or not dish_ids:
+        return jsonify({'error': 'Invalid order data'})
 
-        return jsonify({'message': 'Order created successfully', 'order_id': order_id}), 201
-    except Exception as e:
-        return jsonify({'error': 'Internal Server Error'})
+    cursor = mysql.connection.cursor()
+    
+    # Check dish availability and calculate total price
+    total_price = 0
+    for dish_id in dish_ids:
+        cursor.execute("SELECT * FROM dishes WHERE id = %s", (dish_id,))
+        dish = cursor.fetchone()
+        if not dish or not dish[3]:
+            return jsonify({'error': 'Invalid dish ID or dish not available'})
+        total_price += dish[2]
 
-@app.route('/orders/<int:order_id>', methods=['PUT'])
-def update_order(order_id):
-    new_status = request.json.get('status', '')
-    order = next((order for order in orders if order['id'] == order_id), None)
-    if order:
-        order['status'] = new_status
-        save_data(orders, ORDERS_FILE)
-        return jsonify(order)
-    else:
-        return jsonify({'error': 'Order not found'}), 404
+    # Generate the order ID
+    global order_id_counter
+    order_id = order_id_counter
+    order_id_counter += 1
 
-@app.route('/orders', methods=['GET'])
-def get_orders():
-    try:
-        # Retrieve orders from the file
-        orders = load_data(ORDERS_FILE)
+    # Process the order and set the initial status to 'received'
+    status = 'received'
 
-        # Check if a status filter is provided in the query parameters
-        status = request.args.get('status')
-        if status:
-            filtered_orders = [order for order in orders if order['status'] == status]
-        else:
-            filtered_orders = orders
+    # Save the order
+    cursor.execute(
+        "INSERT INTO orders (orderId, customerName, dishIds, totalPrice, status) VALUES (%s, %s, %s, %s, %s)",
+        (order_id, customer_name, json.dumps(dish_ids), total_price, status)
+    )
+    mysql.connection.commit()
+    cursor.close()
 
-        return jsonify(filtered_orders)
-    except Exception as e:
-        return jsonify({'error': 'Internal Server Error'})
+    # Return the order details as the response
+    order = {
+        'orderId': order_id,
+        'customerName': customer_name,
+        'dishIds': dish_ids,
+        'totalPrice': total_price,
+        'status': status
+    }
+    return jsonify(order)
 
 if __name__ == '__main__':
-    app.run(port=5000, debug=True)
+    app.run()
