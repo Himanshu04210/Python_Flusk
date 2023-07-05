@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Orders</title>
+    <style>
+        /* CSS styles for the page */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            background-color: purple;
+            color: #fff;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>Admin Panel - Orders</h1>
+    </div>
+    <div class="container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer Name</th>
+                    <th>Order Total</th>
+                    <!-- <th>Order Status</th> -->
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Orders will be dynamically added here -->
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
+<script>
+    // Function to fetch all orders
+function fetchOrders() {
+    fetch('http://localhost:5000/orders')
+        .then(response => response.json())
+        .then(data => {
+            const tableBody = document.querySelector('tbody');
+
+            data.forEach(order => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${order.id}</td>
+                    <td>${order.customer_name}</td>
+                    <td>${order.total_price}</td>
+                    
+                `;
+                tableBody.appendChild(row);
+            });
+        })
+        .catch(error => console.log(error));
+}
+
+// Call the fetchOrders function to populate the table on page load
+fetchOrders();
+
+</script>

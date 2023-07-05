@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <style>
+        /* CSS styles for the page */
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            margin-top: 20px;
+        }
+
+        label {
+            margin-top: 10px;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-top: 5px;
+        }
+
+        button[type="submit"],
+        button[type="button"] {
+            padding: 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        button[type="button"] {
+            background-color: #f44336;
+            color: white;
+        }
+
+        button[type="submit"]:hover,
+        button[type="button"]:hover {
+            opacity: 0.8;
+        }
+
+        /* Styles for the update modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: blue;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        h2 {
+            text-align: center;
+        }
+        nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: blue;
+  color: white;
+  padding: 10px;
+}
+
+nav ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+nav ul li {
+  display: inline-block;
+  margin: 0 10px;
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: white;
+}
+
+nav ul li a:hover {
+  text-decoration: underline;
+}
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="admin.html">Manage Menu</a></li>
+            <li><a href="order.html">Order</a></li>
+            <li><a href="view_orders.html">view orders</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <h1>Admin Panel</h1>
+        <form id="add-menu-form">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="price">Price:</label>
+            <input type="number" id="price" name="price" required>
+
+            <label for="availability">Availability:</label>
+            <select id="availability" name="availability" required>
+                <option value="true">Available</option>
+                <option value="false">Not Available</option>
+            </select>
+
+            <button type="submit" style="background-color: purple; color: white;">Add Menu</button>
+        </form>
+
+        <h2>Menu List</h2>
+        <table id="menu-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Availability</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Menu items will be dynamically added -->
+            </tbody>
+        </table>
+        <div id="updateModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Update Menu Item</h2>
+                <form id="updateForm">
+                    <label for="itemName">Name:</label>
+                    <input type="text" id="itemName" required>
+                    <label for="itemPrice">Price:</label>
+                    <input type="number" id="itemPrice" required>
+                    <label for="itemAvailability">Availability:</label>
+                    <input type="checkbox" id="itemAvailability">
+                    <button style="background-color: red;" type="submit">Update</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const addMenuForm = document.getElementById('add-menu-form');
+        const menuTable = document.getElementById('menu-table');
+        const updateModal = document.getElementById('updateModal');
+        const updateForm = document.getElementById('updateForm');
+        const itemName = document.getElementById('itemName');
+        const itemPrice = document.getElementById('itemPrice');
+        const itemAvailability = document.getElementById('itemAvailability');
+
+        // Helper function to create table cells
+        function createTableCell(text) {
+            const cell = document.createElement('td');
+            cell.textContent = text;
+            return cell;
+        }
+
+        // Function to load menu items from server
+        function loadMenu() {
+            fetch('http://localhost:5000/dishes')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = menuTable.getElementsByTagName('tbody')[0];
+                    tableBody.innerHTML = '';
+
+                    data.forEach(item => {
+                        const row = document.createElement('tr');
+                        row.appendChild(createTableCell(item.name));
+                        row.appendChild(createTableCell(item.price));
+                        row.appendChild(createTableCell(item.availability ? 'Available' : 'Not Available'));
+
+                        const actionsCell = document.createElement('td');
+                        const updateButton = document.createElement('button');
+                        updateButton.textContent = 'Update';
+                        updateButton.addEventListener('click', () => openUpdateForm(item.id));
+                        actionsCell.appendChild(updateButton);
+
+                        const deleteButton = document.createElement('button');
+                        deleteButton.textContent = 'Delete';
+                        deleteButton.addEventListener('click', () => deleteMenuItem(item.id));
+                        actionsCell.appendChild(deleteButton);
+
+                        row.appendChild(actionsCell);
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => console.log(error));
+        }
+
+        // Function to handle form submission for adding a menu item
+        function addMenuItem(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const price = document.getElementById('price').value;
+            const availability = document.getElementById('availability').value;
+
+            const newItem = {
+                name: name,
+                price: price,
+                availability: availability
+            };
+
+            fetch('http://localhost:5000/dishes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newItem)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        addMenuForm.reset();
+                        loadMenu();
+                    } else {
+                        console.log(data.message);
+                    }
+                })
+                .catch(error => console.log(error));
+        }
+
+        // Function to handle opening the update form for a menu item
+// Function to handle opening the update form for a menu item
+function openUpdateForm(itemId) {
+    const item = getItemById(itemId);
+
+    if (item) {
+        // Populate the form fields with the current item values
+        itemName.value = item.name;
+        itemPrice.value = item.price;
+        itemAvailability.checked = item.availability;
+
+        // Show the update modal
+        updateModal.style.display = 'block';
+
+        // Handle form submission
+        updateForm.onsubmit = function (e) {
+            e.preventDefault();
+
+            // Get the updated values from the form fields
+            const updatedItem = {
+                name: itemName.value,
+                price: itemPrice.value,
+                availability: itemAvailability.checked
+            };
+
+            // Send the request to update the menu item
+            fetch(`http://localhost:5000/dishes/${itemId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedItem)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        updateModal.style.display = 'none';  // Close the update modal
+                        loadMenu();  // Reload the menu items
+                    } else {
+                        console.log(data.message);
+                    }
+                })
+                .catch(error => console.log(error));
+        };
+    }
+}
+
+
+        // Function to handle deleting a menu item
+        function deleteMenuItem(itemId) {
+            const confirmation = confirm('Are you sure you want to delete this menu item?');
+
+            if (confirmation) {
+                fetch(`http://localhost:5000/dishes/${itemId}`, {
+                    method: 'DELETE'
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            loadMenu();
+                        } else {
+                            console.log(data.message);
+                        }
+                    })
+                    .catch(error => console.log(error));
+            }
+        }
+
+        // Function to retrieve a menu item by its ID
+        function getItemById(itemId) {
+            const tableRows = menuTable.getElementsByTagName('tr');
+
+            for (let i = 0; i < tableRows.length; i++) {
+                const row = tableRows[i];
+                const itemIdAttribute = row.getAttribute('data-id');
+
+                if (itemIdAttribute === itemId.toString()) {
+                    const item = {
+                        id: parseInt(itemIdAttribute),
+                        name: row.cells[0].textContent,
+                        price: parseFloat(row.cells[1].textContent),
+                        availability: row.cells[2].textContent === 'Available'
+                    };
+
+                    return item;
+                }
+            }
+
+            return null;
+        }
+
+        // Close the update modal when the close button is clicked
+        const closeBtn = document.getElementsByClassName('close')[0];
+        closeBtn.addEventListener('click', function () {
+            updateModal.style.display = 'none';
+        });
+
+        // Load initial data
+        loadMenu();
+
+        // Add event listener to form submission
+        addMenuForm.addEventListener('submit', addMenuItem);
+    </script>
+</body>
+</html>
