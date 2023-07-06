@@ -1,138 +1,91 @@
-
-function showAllDishes() {
-  // Fetch the dishes data from the backend API
+// Function to fetch and display the menu
+function showMenu() {
   fetch('http://127.0.0.1:5000/menu')
     .then(response => response.json())
     .then(data => {
-      // Get the container element where the dishes will be displayed
-      const container = document.getElementById('dishesContainer');
+      const dishList = document.getElementById('dish-list');
 
-      // Clear the container before adding new dishes
-      container.innerHTML = '';
+      // Clear the dish list before adding new dishes
+      dishList.innerHTML = '';
 
-      // Iterate through each dish and create the HTML elements
-      data.forEach(dish => {
-        // Create a div element for each dish
-        const dishDiv = document.createElement('div');
-        dishDiv.classList.add('dish');
+      // Iterate through each dish and create list items
+      for (let i = 0; i < data.length; i += 2) {
+        const rowContainer = document.createElement('div');
+        rowContainer.classList.add('row');
 
-        // Create the dish details elements
-        const name = document.createElement('h3');
-        name.textContent = dish[1];
-        const price = document.createElement('p');
-        price.textContent = `Price: $${dish[2]}`;
-        const availability = document.createElement('p');
-        availability.textContent = `Availability: ${dish[3]}`;
+        const dish1 = data[i];
+        const dish2 = data[i + 1];
 
-        // Append the dish details to the dish div
-        dishDiv.appendChild(name);
-        dishDiv.appendChild(price);
-        dishDiv.appendChild(availability);
+        // Create a container for the first dish
+        const dish1Container = createDishContainer(dish1);
+        rowContainer.appendChild(dish1Container);
 
-        // Append the dish div to the container
-        container.appendChild(dishDiv);
-      });
+        // Create a container for the second dish if available
+        if (dish2) {
+          const dish2Container = createDishContainer(dish2);
+          rowContainer.appendChild(dish2Container);
+        }
+
+        dishList.appendChild(rowContainer);
+      }
     })
     .catch(error => {
       console.error('Error:', error);
     });
 }
-
-// Call the function to display the dishes on page load
-showAllDishes();
-
-  // // Handle form submission
-  // const orderForm = document.getElementById('orderForm');
-  // orderForm.addEventListener('submit', event => {
-  //   event.preventDefault();
-
-  //   const customerName = document.getElementById('customerName').value;
-  //   const dishIds = document.getElementById('dishIds').value.split(',');
-
-  //   // Send the order data to the backend
-  //   fetch('http://127.0.0.1:5000/place-order', {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json'
-  //     },
-  //     body: JSON.stringify({ customerName, dishIds })
-  //   })
-  //     .then(response => {
-  //       if (response.ok) {
-  //         return response.json();
-  //       } else {
-  //         throw new Error('Error placing order. Please try again.');
-  //       }
-  //     })
-  //     .then(data => {
-  //       // Display the order status
-  //       const orderStatus = document.createElement('p');
-  //       orderStatus.classList.add('order-status');
-  //       orderStatus.textContent = `Order ID: ${data.orderId} - Status: ${data.status}`;
-  //       orderForm.appendChild(orderStatus);
-
-  //       // Clear the form inputs
-  //       document.getElementById('customerName').value = '';
-  //       document.getElementById('dishIds').value = '';
-  //     })
-  //     .catch(error => {
-  //       // Display error message
-  //       const errorMessage = document.createElement('p');
-  //       errorMessage.classList.add('error-message');
-  //       errorMessage.textContent = error.message;
-  //       orderForm.appendChild(errorMessage);
-  //     });
-  // });
+// Call the showMenu function to display the menu on page load
 
 
-// window.addEventListener("load", () => {
-//   let promise = fetch("http://127.0.0.1:5000/menu")
-//   promise.then((res) => {
-//     // console.log(1);
-//     return res.json();
-// })
-//     .then((response) => {
-//         // console.log(2,3,response);
-//         console.log(response);
-//     })
-// })
+function createDishContainer(dish) {
+  const container = document.createElement('div');
+  container.classList.add('dish-item');
 
-// Get the add dish form and submit button
-const addDishForm = document.getElementById('addDishForm');
-const addDishButton = document.getElementById('add-dish-button');
+  const dishId = document.createElement('span');
+  dishId.classList.add('dish-id');
+  dishId.textContent = `ID: ${dish[0]}`;
 
-// Add event listener to the add dish form submit button
+  const dishName = document.createElement('h3');
+  dishName.textContent = dish[1];
+
+  const dishPrice = document.createElement('p');
+  dishPrice.textContent = `Price: $${dish[2]}`;
+
+  const dishAvailability = document.createElement('p');
+  dishAvailability.textContent = `Availability: ${dish[3]}`;
+
+  container.appendChild(dishId);
+  container.appendChild(dishName);
+  container.appendChild(dishPrice);
+  container.appendChild(dishAvailability);
+
+  return container;
+}
+
+showMenu();
+
+
+
+
+// Add Dish Form Submission
+const addDishForm = document.getElementById('add-dish-form');
+
 addDishForm.addEventListener('submit', function(event) {
   event.preventDefault(); // Prevent form submission
-  addDish(); // Call the addDish function
-});
+  const dishName = document.getElementById('dish-name').value;
+  const dishPrice = document.getElementById('dish-price').value;
+  let dishAvailability = document.getElementById('dish-availability').value;
 
-// Get the update dish form and submit button
-const updateDishForm = document.getElementById('updateDishForm');
-const updateDishButton = document.getElementById('update-dish-button');
+  if(dishAvailability == "avilable") dishAvailability = true;
+  else dishAvailability = false;
 
-// Add event listener to the update dish form submit button
-updateDishForm.addEventListener('submit', function(event) {
-  event.preventDefault(); // Prevent form submission
-  updateDish(); // Call the updateDish function
-});
-
-
-// Function to add a new dish
-function addDish() {
-  // Get the dish details from the form inputs
-  const name = document.getElementById('add-dish-name').value;
-  const price = document.getElementById('add-dish-price').value;
-  const availability = document.getElementById('add-dish-availability').checked ? 'Available' : 'Not Available';
-
-  // Create an object with the dish details
+  // Create a new dish object with the form data
   const dish = {
-    name: name,
-    price: price,
-    availability: availability
+    name: dishName,
+    price: dishPrice,
+    availability: dishAvailability
   };
-
-  // Send a POST request to the backend API to add the dish
+  console.log(dish);
+  // Send the dish data to the server
   fetch('http://127.0.0.1:5000/menu', {
     method: 'POST',
     headers: {
@@ -140,62 +93,56 @@ function addDish() {
     },
     body: JSON.stringify(dish)
   })
-    .then(response => response.json())
-    .then(data => {
-      // Display a success message
-      alert(data.message);
+  .then(response => response.json())
+  .then(data => {
+    console.log(data); // Log the response data
+    // Clear the form inputs
+    addDishForm.reset();
+    // Refresh the menu to display the updated list
+    showMenu();
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+});
 
-      // Clear the form inputs
-      document.getElementById('add-dish-name').value = '';
-      document.getElementById('add-dish-price').value = '';
-      document.getElementById('add-dish-availability').checked = false;
+// Update Dish Form Submission
+const updateDishForm = document.getElementById('update-dish-form');
 
-      // Refresh the dishes list
-      showAllDishes();
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
-}
-
-// Function to update an existing dish
-function updateDish() {
-  // Get the dish details from the form inputs
-  const id = document.getElementById('update-dish-id').value;
-  const name = document.getElementById('update-dish-name').value;
-  const price = document.getElementById('update-dish-price').value;
-  const availability = document.getElementById('update-dish-availability').checked ? 'Available' : 'Not Available';
-
-  // Create an object with the dish details
-  const dish = {
-    name: name,
-    price: price,
-    availability: availability
+updateDishForm.addEventListener('submit', function(event) {
+  event.preventDefault(); // Prevent form submission
+  const dishId = document.getElementById('dish-id').value;
+  const updatedDishName = document.getElementById('updated-dish-name').value;
+  const updatedDishPrice = document.getElementById('updated-dish-price').value;
+  let updatedDishAvailability = document.getElementById('updated-dish-availability').value;
+  if(updatedDishAvailability == "unavailable") dishAvailability = false;
+  else updatedDishAvailability = true;
+  // Create a new updated dish object with the form data
+  const updatedDish = {
+    id: dishId,
+    name: updatedDishName,
+    price: updatedDishPrice,
+    availability: updatedDishAvailability
   };
 
-  // Send a PUT request to the backend API to update the dish
-  fetch(`http://127.0.0.1:5000/menu/${id}`, {
+  console.log(updatedDish);
+  // Send the updated dish data to the server
+  fetch(`http://127.0.0.1:5000/menu/${dishId}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(dish)
+    body: JSON.stringify(updatedDish)
   })
-    .then(response => response.json())
-    .then(data => {
-      // Display a success message
-      alert(data.message);
-
-      // Clear the form inputs
-      document.getElementById('update-dish-id').value = '';
-      document.getElementById('update-dish-name').value = '';
-      document.getElementById('update-dish-price').value = '';
-      document.getElementById('update-dish-availability').checked = false;
-
-      // Refresh the dishes list
-      showAllDishes();
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
-}
+  .then(response => response.json())
+  .then(data => {
+    console.log(data); // Log the response data
+    // Clear the form inputs
+    updateDishForm.reset();
+    // Refresh the menu to display the updated list
+    showMenu();
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+});
