@@ -1,0 +1,347 @@
+
+himanshu> db.mycollection.insertOne({ id: 1, name: "John", email: "john@gmail.com", phone_number:"3580395039" });
+{
+  acknowledged: true,
+  insertedId: ObjectId("64a728ee2b13ad1d002951f4")
+}
+himanshu> db.mycollection.insertOne({ id: 2, name: "Susheel", email: "susheel@gmail.com", phone_number:"5045408349" });
+{
+  acknowledged: true,
+  insertedId: ObjectId("64a729152b13ad1d002951f5")
+}
+himanshu> db.mycollection.insertOne({ id: 3, name: "pavan", email: "pavan@gmail.com", phone_number:"430840449" });
+{
+  acknowledged: true,
+  insertedId: ObjectId("64a7293e2b13ad1d002951f6")
+}
+himanshu> db.mycollection.insertOne({ id: 3, name: "rubel", email: "rubel@gmail.com", phone_number:"430840449" });
+{
+  acknowledged: true,
+  insertedId: ObjectId("64a729522b13ad1d002951f7")
+}
+himanshu> db.mycollection.insertOne({ id: 4, name: "rahul", email: "rahul@gmail.com", phone_number:"430840449" });
+{
+  acknowledged: true,
+  insertedId: ObjectId("64a729672b13ad1d002951f8")
+}
+himanshu> db.mycollection.insertOne({ id: 5, name: "amna", email: "aman@gmail.com", phone_number:"430840449" });
+{
+  acknowledged: true,
+  insertedId: ObjectId("64a729792b13ad1d002951f9")
+}
+himanshu> db.mycollection.find();
+[
+  {
+    _id: ObjectId("64a728ee2b13ad1d002951f4"),
+    id: 1,
+    name: 'John',
+    email: 'john@gmail.com',
+    phone_number: '3580395039'
+  },
+  {
+    _id: ObjectId("64a729152b13ad1d002951f5"),
+    id: 2,
+    name: 'Susheel',
+    email: 'susheel@gmail.com',
+    phone_number: '5045408349'
+  },
+  {
+    _id: ObjectId("64a7293e2b13ad1d002951f6"),
+    id: 3,
+    name: 'pavan',
+    email: 'pavan@gmail.com',
+    phone_number: '430840449'
+  },
+  {
+    _id: ObjectId("64a729522b13ad1d002951f7"),
+    id: 3,
+    name: 'rubel',
+    email: 'rubel@gmail.com',
+    phone_number: '430840449'
+  },
+  {
+    _id: ObjectId("64a729672b13ad1d002951f8"),
+    id: 4,
+    name: 'rahul',
+    email: 'rahul@gmail.com',
+    phone_number: '430840449'
+  },
+  {
+    _id: ObjectId("64a729792b13ad1d002951f9"),
+    id: 5,
+    name: 'amna',
+    email: 'aman@gmail.com',
+    phone_number: '430840449'
+  }
+]
+himanshu> db.mycollection.find({}, { name: 1, email: 1 })
+[
+  {
+    _id: ObjectId("64a728ee2b13ad1d002951f4"),
+    name: 'John',
+    email: 'john@gmail.com'
+  },
+  {
+    _id: ObjectId("64a729152b13ad1d002951f5"),
+    name: 'Susheel',
+    email: 'susheel@gmail.com'
+  },
+  {
+    _id: ObjectId("64a7293e2b13ad1d002951f6"),
+    name: 'pavan',
+    email: 'pavan@gmail.com'
+  },
+  {
+    _id: ObjectId("64a729522b13ad1d002951f7"),
+    name: 'rubel',
+    email: 'rubel@gmail.com'
+  },
+  {
+    _id: ObjectId("64a729672b13ad1d002951f8"),
+    name: 'rahul',
+    email: 'rahul@gmail.com'
+  },
+  {
+    _id: ObjectId("64a729792b13ad1d002951f9"),
+    name: 'amna',
+    email: 'aman@gmail.com'
+  }
+]
+himanshu> db.mycollection.find({id:3})
+[
+  {
+    _id: ObjectId("64a7293e2b13ad1d002951f6"),
+    id: 3,
+    name: 'pavan',
+    email: 'pavan@gmail.com',
+    phone_number: '430840449'
+  },
+  {
+    _id: ObjectId("64a729522b13ad1d002951f7"),
+    id: 3,
+    name: 'rubel',
+    email: 'rubel@gmail.com',
+    phone_number: '430840449'
+  }
+]
+himanshu> db.customers.find({ name: { $regex: /^A/, $options: 'i' } })
+
+himanshu> db.customers.find({ name: { $regex: /^r/, $options: 'i' } })
+
+himanshu>
+
+himanshu> db.mycollection.find({ name: { $regex: /^r/, $options: 'i' } })
+[
+  {
+    _id: ObjectId("64a729522b13ad1d002951f7"),
+    id: 3,
+    name: 'rubel',
+    email: 'rubel@gmail.com',
+    phone_number: '430840449'
+  },
+  {
+    _id: ObjectId("64a729672b13ad1d002951f8"),
+    id: 4,
+    name: 'rahul',
+    email: 'rahul@gmail.com',
+    phone_number: '430840449'
+  }
+]
+himanshu> db.mycollection.find().sort({ name: 1 });
+[
+  {
+    _id: ObjectId("64a728ee2b13ad1d002951f4"),
+    id: 1,
+    name: 'John',
+    email: 'john@gmail.com',
+    phone_number: '3580395039'
+  },
+  {
+    _id: ObjectId("64a729152b13ad1d002951f5"),
+    id: 2,
+    name: 'Susheel',
+    email: 'susheel@gmail.com',
+    phone_number: '5045408349'
+  },
+  {
+    _id: ObjectId("64a729792b13ad1d002951f9"),
+    id: 5,
+    name: 'amna',
+    email: 'aman@gmail.com',
+    phone_number: '430840449'
+  },
+  {
+    _id: ObjectId("64a7293e2b13ad1d002951f6"),
+    id: 3,
+    name: 'pavan',
+    email: 'pavan@gmail.com',
+    phone_number: '430840449'
+  },
+  {
+    _id: ObjectId("64a729672b13ad1d002951f8"),
+    id: 4,
+    name: 'rahul',
+    email: 'rahul@gmail.com',
+    phone_number: '430840449'
+  },
+  {
+    _id: ObjectId("64a729522b13ad1d002951f7"),
+    id: 3,
+    name: 'rubel',
+    email: 'rubel@gmail.com',
+    phone_number: '430840449'
+  }
+]
+himanshu> db.mycollection.updateOne({ id: 4 }, { $set: { email: 'rahulDelhi@gmail' } });
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+himanshu> db.mycollection.find();
+[
+  {
+    _id: ObjectId("64a728ee2b13ad1d002951f4"),
+    id: 1,
+    name: 'John',
+    email: 'john@gmail.com',
+    phone_number: '3580395039'
+  },
+  {
+    _id: ObjectId("64a729152b13ad1d002951f5"),
+    id: 2,
+    name: 'Susheel',
+    email: 'susheel@gmail.com',
+    phone_number: '5045408349'
+  },
+  {
+    _id: ObjectId("64a7293e2b13ad1d002951f6"),
+    id: 3,
+    name: 'pavan',
+    email: 'pavan@gmail.com',
+    phone_number: '430840449'
+  },
+  {
+    _id: ObjectId("64a729522b13ad1d002951f7"),
+    id: 3,
+    name: 'rubel',
+    email: 'rubel@gmail.com',
+    phone_number: '430840449'
+  },
+  {
+    _id: ObjectId("64a729672b13ad1d002951f8"),
+    id: 4,
+    name: 'rahul',
+    email: 'rahulDelhi@gmail',
+    phone_number: '430840449'
+  },
+  {
+    _id: ObjectId("64a729792b13ad1d002951f9"),
+    id: 5,
+    name: 'amna',
+    email: 'aman@gmail.com',
+    phone_number: '430840449'
+  }
+]
+himanshu> db.mycollection.find().sort({id:1}).limit(3)
+[
+  {
+    _id: ObjectId("64a728ee2b13ad1d002951f4"),
+    id: 1,
+    name: 'John',
+    email: 'john@gmail.com',
+    phone_number: '3580395039'
+  },
+  {
+    _id: ObjectId("64a729152b13ad1d002951f5"),
+    id: 2,
+    name: 'Susheel',
+    email: 'susheel@gmail.com',
+    phone_number: '5045408349'
+  },
+  {
+    _id: ObjectId("64a7293e2b13ad1d002951f6"),
+    id: 3,
+    name: 'pavan',
+    email: 'pavan@gmail.com',
+    phone_number: '430840449'
+  }
+]
+himanshu> db.mycollection.deleteOne({id:2});
+{ acknowledged: true, deletedCount: 1 }
+himanshu> db.mycollection.find().sort({id:1}).skip(1);
+[
+  {
+    _id: ObjectId("64a7293e2b13ad1d002951f6"),
+    id: 3,
+    name: 'pavan',
+    email: 'pavan@gmail.com',
+    phone_number: '430840449'
+  },
+  {
+    _id: ObjectId("64a729522b13ad1d002951f7"),
+    id: 3,
+    name: 'rubel',
+    email: 'rubel@gmail.com',
+    phone_number: '430840449'
+  },
+  {
+    _id: ObjectId("64a729672b13ad1d002951f8"),
+    id: 4,
+    name: 'rahul',
+    email: 'rahulDelhi@gmail',
+    phone_number: '430840449'
+  },
+  {
+    _id: ObjectId("64a729792b13ad1d002951f9"),
+    id: 5,
+    name: 'amna',
+    email: 'aman@gmail.com',
+    phone_number: '430840449'
+  }
+]
+himanshu> db.mycollection.countDocuments();
+5
+himanshu> db.mycollection.find({ email: { $exists: true, $type: "null" } });
+
+himanshu> db.mycollection.find({ email: { $exists: true, $ne: null } });
+[
+  {
+    _id: ObjectId("64a728ee2b13ad1d002951f4"),
+    id: 1,
+    name: 'John',
+    email: 'john@gmail.com',
+    phone_number: '3580395039'
+  },
+  {
+    _id: ObjectId("64a7293e2b13ad1d002951f6"),
+    id: 3,
+    name: 'pavan',
+    email: 'pavan@gmail.com',
+    phone_number: '430840449'
+  },
+  {
+    _id: ObjectId("64a729522b13ad1d002951f7"),
+    id: 3,
+    name: 'rubel',
+    email: 'rubel@gmail.com',
+    phone_number: '430840449'
+  },
+  {
+    _id: ObjectId("64a729672b13ad1d002951f8"),
+    id: 4,
+    name: 'rahul',
+    email: 'rahulDelhi@gmail',
+    phone_number: '430840449'
+  },
+  {
+    _id: ObjectId("64a729792b13ad1d002951f9"),
+    id: 5,
+    name: 'amna',
+    email: 'aman@gmail.com',
+    phone_number: '430840449'
+  }
+]
+himanshu>
