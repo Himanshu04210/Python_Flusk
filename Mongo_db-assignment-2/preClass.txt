@@ -1,0 +1,76 @@
+db.createCollection("Restaurants");
+
+db.Restaurants.insertMany([
+  {
+    id: 1,
+    name: 'Restaurant A',
+    cuisine_type: 'Italian',
+    location: 'New York',
+    average_rating: 4.5,
+    delivery_available: true
+  },
+  {
+    id: 2,
+    name: 'Restaurant B',
+    cuisine_type: 'Mexican',
+    location: 'Los Angeles',
+    average_rating: 4.2,
+    delivery_available: true
+  },
+  {
+    id: 3,
+    name: 'Restaurant C',
+    cuisine_type: 'Chinese',
+    location: 'San Francisco',
+    average_rating: 3.8,
+    delivery_available: false
+  },
+  {
+    id: 4,
+    name: 'Restaurant D',
+    cuisine_type: 'Indian',
+    location: 'Chicago',
+    average_rating: 4.6,
+    delivery_available: true
+  },
+  {
+    id: 5,
+    name: 'Restaurant E',
+    cuisine_type: 'Japanese',
+    location: 'Tokyo',
+    average_rating: 4.9,
+    delivery_available: true
+  }
+]);
+
+
+db.Restaurants.find().sort({ average_rating: -1 });
+
+
+db.Restaurants.find({
+  delivery_available: true,
+  average_rating: { $gt: 4 }
+});
+
+
+db.Restaurants.find({ cuisine_type: { $exists: false } });
+
+
+db.Restaurants.countDocuments({ delivery_available: true });
+
+
+db.Restaurants.find({ location: /New York/ });
+
+
+db.Restaurants.aggregate([
+  { $group: { _id: null, average_rating: { $avg: "$average_rating" } } }
+]);
+
+
+db.Restaurants.find().sort({ average_rating: -1 }).limit(5);
+
+
+db.Restaurants.deleteOne({ id: 3 });
+
+
+
